@@ -1,23 +1,53 @@
 import path from "node:path";
 import { __dirname } from "./util.js";
-import ReactFlightWebpackPlugin from "react-server-dom-webpack/plugin";
+import {
+  WebpackRscClientPlugin,
+  WebpackRscServerPlugin,
+  createWebpackRscClientLoader,
+  createWebpackRscServerLoader,
+  createWebpackRscSsrLoader,
+  webpackRscLayerName,
+} from "@mfng/webpack-rsc";
+
+const clientReferencesMap = new Map();
+const serverReferencesMap = new Map();
+const rscServerLoader = createWebpackRscServerLoader({ clientReferencesMap });
+const rscSsrLoader = createWebpackRscSsrLoader();
+const rscClientLoader = createWebpackRscClientLoader({ serverReferencesMap });
+
+const swcOptions = {
+  jsc: {
+    parser: {
+      syntax: "typescript",
+      tsx: true,
+      jsx: true,
+    },
+    transform: {
+      react: {
+        runtime: "automatic",
+      },
+    },
+  },
+};
 
 /**
  * @type {import("webpack").Configuration}
  */
-export default {
+const serverConfig = {
+  name: "server",
   mode: "development",
   entry: {
-    main: path.join(__dirname, "../app/main.tsx"),
-    page: path.join(__dirname, "../app/page.tsx"),
+    page: {
+      filename: "main.cjs",
+      import: path.join(__dirname, "../app/page.tsx"),
+    },
   },
-  target: "web",
+  target: "node",
   output: {
-    path: path.join(__dirname, "../dist/_static"),
-    libraryTarget: "module",
-  },
-  experiments: {
-    outputModule: true,
+    path: path.join(__dirname, "../dist/server"),
+    library: {
+      type: "commonjs-static",
+    },
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".jsx"],
@@ -25,33 +55,70 @@ export default {
   module: {
     rules: [
       {
-        test: /\.(j|t)sx?$/,
-        loader: "swc-loader",
-        options: {
-          jsc: {
-            parser: {
-              syntax: "typescript",
-              tsx: true,
-              jsx: true,
-            },
-            transform: {
-              react: {
-                runtime: "automatic",
+        resource: /\/page\.tsx$/,
+        layer: webpackRscLayerName,
+      },
+      {
+        issuerLayer: webpackRscLayerName,
+        resolve: { conditionNames: ["react-server", "..."] },
+      },
+      {
+        oneOf: [
+          {
+            issuerLayer: webpackRscLayerName,
+            test: /\.tsx?$/,
+            use: [
+              rscServerLoader,
+              {
+                loader: "swc-loader",
+                options: swcOptions,
               },
-            },
+            ],
           },
-        },
+          {
+            test: /\.tsx?$/,
+            use: [
+              rscSsrLoader,
+              {
+                loader: "swc-loader",
+                options: swcOptions,
+              },
+            ],
+          },
+        ],
       },
     ],
   },
   plugins: [
-    new ReactFlightWebpackPlugin({
-      isServer: false,
-      clientReferences: {
-        directory: path.join(__dirname, "../app"),
-        recursive: true,
-        include: /\.(js|ts|jsx|tsx)$/,
-      },
-    }),
+    new WebpackRscServerPlugin({ clientReferencesMap, serverReferencesMap }),
   ],
+  experiments: { layers: true },
 };
+
+const clientConfig = {
+  name: "client",
+  mode: "development",
+  dependencies: ["server"],
+  entry: path.join(__dirname, "../app/main.tsx"),
+  target: "web",
+  output: {
+    path: path.join(__dirname, "../dist/_static"),
+  },
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        use: [
+          rscClientLoader,
+          {
+            loader: "swc-loader",
+            options: swcOptions,
+          },
+        ],
+      },
+    ],
+  },
+  plugins: [new WebpackRscClientPlugin({ clientReferencesMap })],
+};
+
+export default [serverConfig, clientConfig];

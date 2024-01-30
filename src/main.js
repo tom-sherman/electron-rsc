@@ -22,7 +22,7 @@ app.whenReady().then(() => {
   createWindow();
 
   protocol.handle("rsc", async (request) => {
-    const Page = await import("../dist/_static/page.mjs");
+    const Page = await import("../dist/server/main.cjs");
     const clientManifest = JSON.parse(
       await fs.readFile(
         path.join(__dirname, "../dist/_static/react-client-manifest.json"),
@@ -32,10 +32,12 @@ app.whenReady().then(() => {
       ),
     );
 
-    console.log(clientManifest);
-
     const stream = readablefromPipeable(
-      renderToPipeableStream(createElement(Page.default), clientManifest),
+      renderToPipeableStream(
+        // No idea why this is .default.default lol
+        createElement(Page.default.default),
+        clientManifest,
+      ),
     );
 
     const readable = new ReadableStream({
@@ -49,7 +51,11 @@ app.whenReady().then(() => {
       },
     });
 
-    return new Response(readable);
+    return new Response(readable, {
+      headers: {
+        "content-type": "text/x-component",
+      },
+    });
   });
 
   protocol.handle("file", async (req) => {

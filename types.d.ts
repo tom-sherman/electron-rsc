@@ -3,9 +3,9 @@ declare module "react-server-dom-webpack" {}
 declare module "react-server-dom-webpack/client" {
   import { ReactNode } from "react";
 
-  export function createFromFetch(response: Promise<Response>): Promise<{
-    root: ReactNode;
-  }>;
+  export function createFromFetch(
+    response: Promise<Response>,
+  ): Promise<ReactNode>;
 }
 
 declare module "react-server-dom-webpack/server" {

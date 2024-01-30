@@ -11,6 +11,7 @@
   "author": "Tom Sherman",
   "license": "MIT",
   "dependencies": {
+    "@mfng/webpack-rsc": "^3.0.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.11",
     "@swc/core": "^1.3.107",
     "@types/node": "^20.11.10",

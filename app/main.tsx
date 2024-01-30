@@ -5,11 +5,12 @@ import { ReactNode } from "react";
 console.log("hello");
 
 function Shell({ children }: { children: ReactNode }) {
-  return <div id="shell">{children}</div>;
+  console.log(children);
+  return <div id="shell">children: {children}</div>;
 }
 
 const root = createRoot(document.getElementById("app")!);
 
 createFromFetch(fetch("rsc://rsc")).then((res) => {
-  root.render(<Shell>{res.root}</Shell>);
+  root.render(<Shell>{res}</Shell>);
 });
