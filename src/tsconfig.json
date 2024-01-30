@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "strict": true,
+    "module": "NodeNext",
+    "esModuleInterop": true,
+    "moduleResolution": "NodeNext",
+    "noUncheckedIndexedAccess": true,
+    "jsx": "react-jsx",
+    "checkJs": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "types": ["../types"],
+  },
+}

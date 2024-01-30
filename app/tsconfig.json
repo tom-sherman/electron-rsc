@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "strict": true,
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "moduleResolution": "Bundler",
+    "noUncheckedIndexedAccess": true,
+    "jsx": "react-jsx",
+    "checkJs": true,
+    "allowJs": true,
+    "types": ["../types", "node"],
+  },
+}

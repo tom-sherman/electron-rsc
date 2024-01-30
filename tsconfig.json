@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "strict": true,
+    "module": "NodeNext",
+    "esModuleInterop": true,
+    "moduleResolution": "NodeNext",
+    "noUncheckedIndexedAccess": true,
+    "checkJs": true,
+    "allowJs": true,
+  },
+}
