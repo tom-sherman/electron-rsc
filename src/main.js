@@ -5,6 +5,9 @@ import RSDW from "react-server-dom-webpack/server";
 const { renderToPipeableStream } = RSDW;
 import { createElement } from "react";
 import fs from "node:fs/promises";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -22,7 +25,8 @@ app.whenReady().then(() => {
   createWindow();
 
   protocol.handle("rsc", async (request) => {
-    const Page = await import("../dist/server/main.cjs");
+    delete require.cache[require.resolve("../dist/server/main.cjs")];
+    const Page = require("../dist/server/main.cjs");
     const clientManifest = JSON.parse(
       await fs.readFile(
         path.join(__dirname, "../dist/_static/react-client-manifest.json"),
@@ -32,10 +36,12 @@ app.whenReady().then(() => {
       ),
     );
 
+    console.log(Page);
+
     const stream = readablefromPipeable(
       renderToPipeableStream(
         // No idea why this is .default.default lol
-        createElement(Page.default.default),
+        createElement(Page.default),
         clientManifest,
       ),
     );

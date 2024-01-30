@@ -4,6 +4,7 @@ import { Client } from "./client";
 export default async function Page() {
   return (
     <>
+      <p>anotheraaaa</p>
       <Client data={process.platform} />
       <Suspense fallback={<p>Loading...</p>}>
         <Delayed />
