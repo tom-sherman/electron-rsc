@@ -5,7 +5,6 @@ import { ReactNode } from "react";
 console.log("hello");
 
 function Shell({ children }: { children: ReactNode }) {
-  console.log(children);
   return <div id="shell">children: {children}</div>;
 }
 
