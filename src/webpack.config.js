@@ -37,9 +37,9 @@ const serverConfig = {
   name: "server",
   mode: "development",
   entry: {
-    page: {
+    server: {
       filename: "main.cjs",
-      import: path.join(__dirname, "../app/page.tsx"),
+      import: path.join(__dirname, "./framework/server.tsx"),
     },
   },
   target: "node",
@@ -55,12 +55,12 @@ const serverConfig = {
   module: {
     rules: [
       {
-        resource: /\/page\.tsx$/,
+        resource: /\/framework\/server\.tsx$/,
         layer: webpackRscLayerName,
       },
       {
         issuerLayer: webpackRscLayerName,
-        resolve: { conditionNames: ["react-server", "..."] },
+        resolve: { conditionNames: ["react-server"] },
       },
       {
         oneOf: [
@@ -99,7 +99,7 @@ const clientConfig = {
   name: "client",
   mode: "development",
   dependencies: ["server"],
-  entry: path.join(__dirname, "../app/main.tsx"),
+  entry: path.join(__dirname, "./framework/client.tsx"),
   target: "web",
   output: {
     path: path.join(__dirname, "../dist/_static"),

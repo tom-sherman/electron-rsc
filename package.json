@@ -5,7 +5,7 @@
   "main": "src/main.js",
   "type": "module",
   "scripts": {
-    "dev": "NODE_OPTIONS=\"--conditions react-server\" electron . --dev"
+    "dev": "electron . --dev"
   },
   "keywords": [],
   "author": "Tom Sherman",

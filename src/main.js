@@ -1,9 +1,6 @@
 import { app, BrowserWindow, protocol } from "electron";
 import path from "node:path";
-import { __dirname, readablefromPipeable } from "./util.js";
-import RSDW from "react-server-dom-webpack/server";
-const { renderToPipeableStream } = RSDW;
-import { createElement } from "react";
+import { __dirname } from "./util.js";
 import fs from "node:fs/promises";
 import { createRequire } from "node:module";
 
@@ -26,7 +23,7 @@ app.whenReady().then(() => {
 
   protocol.handle("rsc", async (request) => {
     delete require.cache[require.resolve("../dist/server/main.cjs")];
-    const Page = require("../dist/server/main.cjs");
+    const Server = require("../dist/server/main.cjs");
     const clientManifest = JSON.parse(
       await fs.readFile(
         path.join(__dirname, "../dist/_static/react-client-manifest.json"),
@@ -36,32 +33,7 @@ app.whenReady().then(() => {
       ),
     );
 
-    console.log(Page);
-
-    const stream = readablefromPipeable(
-      renderToPipeableStream(
-        // No idea why this is .default.default lol
-        createElement(Page.default),
-        clientManifest,
-      ),
-    );
-
-    const readable = new ReadableStream({
-      start(controller) {
-        stream.on("data", (chunk) => {
-          controller.enqueue(chunk);
-        });
-        stream.on("end", () => {
-          controller.close();
-        });
-      },
-    });
-
-    return new Response(readable, {
-      headers: {
-        "content-type": "text/x-component",
-      },
-    });
+    return Server.handleRequest(request, clientManifest);
   });
 
   protocol.handle("file", async (req) => {

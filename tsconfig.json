@@ -8,5 +8,6 @@
     "noUncheckedIndexedAccess": true,
     "checkJs": true,
     "allowJs": true,
+    "types": ["react/experimental"],
   },
 }
