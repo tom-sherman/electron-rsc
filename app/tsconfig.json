@@ -9,6 +9,11 @@
     "jsx": "react-jsx",
     "checkJs": true,
     "allowJs": true,
-    "types": ["../types", "node"],
+    "types": [
+      "../types",
+      "node",
+      "react/experimental",
+      "react-dom/experimental",
+    ],
   },
 }
