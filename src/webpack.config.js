@@ -57,10 +57,11 @@ const serverConfig = {
       {
         resource: /\/framework\/server\.tsx$/,
         layer: webpackRscLayerName,
+        resolve: { conditionNames: ["react-server", "node", "webpack"] },
       },
       {
         issuerLayer: webpackRscLayerName,
-        resolve: { conditionNames: ["react-server"] },
+        resolve: { conditionNames: ["react-server", "node", "webpack"] },
       },
       {
         oneOf: [
