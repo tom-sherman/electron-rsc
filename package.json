@@ -5,6 +5,7 @@
   "main": "src/main.js",
   "type": "module",
   "scripts": {
+    "build": "webpack -c src/webpack.config.js",
     "dev": "electron . --dev"
   },
   "keywords": [],
